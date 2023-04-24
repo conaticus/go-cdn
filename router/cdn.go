@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -24,16 +23,8 @@ func uploadEndpoint(c *gin.Context) {
 
 	c.SaveUploadedFile(file, "./uploads/images/" + file.Filename)
 
-	urlPrefix := Config.Hostname
-
-	if Config.Hostname == "localhost" || len(Config.Hostname) == 0 {
-		urlPrefix = fmt.Sprintf("http://localhost:%s/", Config.Port)
-	} else if !strings.HasSuffix(urlPrefix, "/") {
-		urlPrefix += "/"
-	}
-
 	body := gin.H{
-		"file_url": urlPrefix + file.Filename,
+		"file_url": Config.HostUrl + file.Filename,
 	}
 
 	c.JSON(http.StatusOK, body)

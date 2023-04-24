@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"log"
 	"os"
 	. "strconv"
@@ -19,10 +20,23 @@ type EnvConfig struct {
 	Port string
 	FileUploadLimit int
 	Mode string
-	Hostname string
+	HostUrl string
 }
 
 var Config EnvConfig
+
+func GetUrlFromHostname() (string) {
+	hostname := EnvGetString("HOSTNAME", false)
+	var hostUrl string
+
+	if hostname == "localhost" || len(hostname) == 0 {
+		hostUrl = fmt.Sprintf("http://localhost:%s/", Config.Port)
+	} else {
+		hostUrl = "https://" + hostname + "/"
+	}
+
+	return hostUrl
+}
 
 func init() {
 	env.Load()
@@ -31,8 +45,9 @@ func init() {
 		FileUploadLimit: EnvGetNumber("FILE_UPLOAD_LIMIT_MB", true),
 
 		Mode: EnvGetString("MODE", false),
-		Hostname: EnvGetString("HOSTNAME", false),
 	}
+
+	Config.HostUrl = GetUrlFromHostname()
 
 	gin.SetMode(Config.Mode)
 }
