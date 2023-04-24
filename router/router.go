@@ -1,7 +1,7 @@
 package router
 
 import (
-	. "strconv"
+	"net/http"
 
 	. "cdn/api/util"
 
@@ -9,14 +9,16 @@ import (
 )
 
 func pingEndpoint(c *gin.Context) {
-	c.JSON(200, "pong")
+	c.JSON(http.StatusOK, "pong")
 }
 
 func InitRoutes() {
+
+	// Configure primary router
 	router := gin.Default()
+	router.MaxMultipartMemory = int64(Config.FileUploadLimit) << 20
 
 	// Setup routes & paths
-
 	api := router.Group("/api")
 	{
 		api.GET("/ping", pingEndpoint)
@@ -28,5 +30,6 @@ func InitRoutes() {
 		api.GET("/download/:upload_id", downloadEndpoint)
 	}
 
-	router.Run(":" + Itoa(Config.Port))
+	// Run router
+	router.Run(":" + Config.Port)
 }

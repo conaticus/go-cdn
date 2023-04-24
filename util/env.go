@@ -5,6 +5,7 @@ import (
 	"os"
 	. "strconv"
 
+	"github.com/gin-gonic/gin"
 	env "github.com/joho/godotenv"
 )
 
@@ -15,15 +16,25 @@ const (
 )
 
 type EnvConfig struct {
-	Port int
-	ImageUploadLimit int
+	Port string
+	FileUploadLimit int
 	Mode string
+	Hostname string
 }
 
 var Config EnvConfig
 
 func init() {
 	env.Load()
+	Config = EnvConfig{
+		Port: EnvGetString("PORT", true),
+		FileUploadLimit: EnvGetNumber("FILE_UPLOAD_LIMIT_MB", true),
+
+		Mode: EnvGetString("MODE", false),
+		Hostname: EnvGetString("HOSTNAME", false),
+	}
+
+	gin.SetMode(Config.Mode)
 }
 
 // Errors if does not exist
