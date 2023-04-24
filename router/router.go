@@ -14,6 +14,9 @@ func pingEndpoint(c *gin.Context) {
 
 func InitRoutes() {
 	router := gin.Default()
+
+	// Setup routes & paths
+
 	api := router.Group("/api")
 	{
 		api.GET("/ping", pingEndpoint)
