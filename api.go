@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	Config = EnvConfig{Port: EnvGetNumber("PORT", true), ImageUploadLimit: EnvGetNumber("IMAGE_UPLOAD_LIMIT", true)}
+	Config = EnvConfig{Port: EnvGetNumber("PORT", true), ImageUploadLimit: EnvGetNumber("IMAGE_UPLOAD_LIMIT_MB", true)}
 }
 
 func main() {
