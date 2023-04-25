@@ -14,39 +14,27 @@ This is a basic CDN written in Golang. Currently it only supports image uploads.
 
 ### `/api/ping`
 
-\
-**Body**
-
-```json
-
-```
-
 **Response**
 
 ```json
-
+pong
 ```
 
 ### `/api/upload`
 
 \
-**Body**
-
-```json
-// Todo
-```
+**Body** \
+Form data with image named "file".
 
 **Response**
 
 ```json
-// Todo
+{
+  "file_url": "https://example.com/download/uuid.png"
+}
 ```
 
-### `/api/download/{uuid}`
-
-\
-**Body** \
-Empty
+### `/api/download/{file_name}`
 
 **Response**
 \
