@@ -16,7 +16,7 @@ This is a basic CDN written in Golang. Currently it only supports image uploads.
 
 **Response**
 
-```json
+```
 pong
 ```
 
