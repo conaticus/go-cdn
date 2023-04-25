@@ -27,8 +27,9 @@ func InitRoutes() {
 	api.Group("/cdn")
 	{
 		api.POST("/upload", uploadEndpoint)
-		api.GET("/download/:upload_id", downloadEndpoint)
 	}
+
+	router.Static("/download", "./uploads/images")
 
 	// Run router
 	router.Run(":" + Config.Port)

@@ -42,11 +42,8 @@ func uploadEndpoint(c *gin.Context) {
 	}
 
 	body := gin.H{
-		"file_url": Config.HostUrl + savedFileName,
+		"file_url": Config.HostUrl + "download/" + savedFileName,
 	}
 
 	c.JSON(http.StatusOK, body)
-}
-
-func downloadEndpoint(c *gin.Context) {
 }
