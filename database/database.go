@@ -5,15 +5,16 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
+var db *sqlx.DB
 
 func init() {
 	// Connect to database
 	var err error
-	db, err = sql.Open("postgres", Config.DbUrl + "?sslmode=disable")
+	db, err = sqlx.Open("postgres", Config.DbUrl+"?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -21,32 +22,34 @@ func init() {
 	setupSchema()
 }
 
-func runQuery(query string, args ...any) *sql.Rows {
-	rows, err := db.Query(query, args...)
-	if err != nil {
-		log.Fatalf("ERROR EXECUTING QUERY:\n\n%s\n\nERROR: %s", query, err.Error())
-	}
-
-	return rows
-}
-
 func setupSchema() {
-	runQuery(`
+	// Create 'uploads' table if not exists
+	_, err := db.Exec(`
 CREATE TABLE IF NOT EXISTS uploads (
 	file_name VARCHAR(40) NOT NULL,
 	checksum bytea NOT NULL
 )`)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func AddImage(filename string, checksum []byte) (string, bool) {
-	// Check image exists
+	// Check if image already exists in the database
 	var existingFileName string
-	db.QueryRow("SELECT file_name FROM uploads WHERE checksum = $1", string(checksum[:])).Scan(&existingFileName)
+	err := db.Get(&existingFileName, "SELECT file_name FROM uploads WHERE checksum = $1", string(checksum[:]))
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
+	}
+
 	if len(existingFileName) != 0 {
 		return existingFileName, true
 	}
 
-	// Add image
-	runQuery("INSERT INTO uploads (file_name, checksum) VALUES ($1, $2)", filename, string(checksum[:]))
+	// Add image to the database
+	_, err = db.Exec("INSERT INTO uploads (file_name, checksum) VALUES ($1, $2)", filename, string(checksum[:]))
+	if err != nil {
+		log.Fatal(err)
+	}
 	return filename, false
 }
